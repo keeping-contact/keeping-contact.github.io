@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Keeping Contact presents task-adaptive friction margins for bimanual non-prehensile object tilting.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Keeping Contact: Task-Adaptive Friction Margins">
+  <meta property="og:description" content="Task-adaptive friction margins for maintaining contact in bimanual non-prehensile manipulation.">
+  <meta property="og:image" content="assets/images/social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Two robot arms positioned around the bimanual object-tilting apparatus.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Keeping Contact: Task-Adaptive Friction Margins">
+  <meta name="twitter:description" content="Task-adaptive friction margins for maintaining contact in bimanual non-prehensile manipulation.">
+  <meta name="twitter:image" content="assets/images/social-preview.jpg">
+  <title>Keeping Contact: Task-Adaptive Friction Margins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans:400,600,700|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="styles.css?v=42">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <h1 id="page-title">Keeping Contact: Task-Adaptive Friction Margins for Bimanual Non-Prehensile Manipulation</h1>
+        <div class="identity" aria-label="Publication details">
+          <p class="author-list">Qian Ying Lee, Lin Yang, and Domenico Campolo</p>
+          <p class="affiliation-list">Nanyang Technological University</p>
+          <p class="acceptance-status">Accepted at IEEE RA-L</p>
+        </div>
+
+        <div class="resource-row" aria-label="Project resources">
+          <span class="resource pending" title="Link pending confirmation"><i class="fas fa-file-pdf" aria-hidden="true"></i><span>PDF</span></span>
+          <span class="resource pending" title="Link pending confirmation"><i class="ai ai-arxiv" aria-hidden="true"></i><span>arXiv</span></span>
+          <span class="resource pending" title="AI-generated paper overview on alphaXiv — link pending confirmation" aria-label="AI-generated paper overview on alphaXiv, link pending confirmation"><img class="resource-icon" src="assets/images/alphaxiv-mark.svg?v=2" alt=""><span>Overview</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="teaser" aria-label="Task comparison">
+      <div class="teaser-grid">
+        <article class="teaser-video">
+          <div class="video-frame">
+            <video data-sync-video muted loop playsinline controls preload="auto" poster="assets/videos/task-adaptive-margin-poster.jpg?v=5" aria-label="Trial 1 with the task-adaptive friction margin completing the bimanual tilt while maintaining both robot contacts">
+              <source src="assets/videos/task-adaptive-margin.mp4?v=5" type="video/mp4">
+            </video>
+          </div>
+          <h2>Task-adaptive margin</h2>
+        </article>
+        <article class="teaser-video">
+          <div class="video-frame">
+            <video data-sync-video data-no-margin-video muted loop playsinline controls preload="auto" poster="assets/videos/no-margin-poster.jpg?v=6" aria-label="Trial 1 without a friction margin showing contact loss before the bimanual tilt is completed">
+              <source src="assets/videos/no-margin.mp4?v=6" type="video/mp4">
+            </video>
+            <div class="failure-overlay" data-failure-overlay aria-hidden="true">
+              <strong>Contact lost</strong>
+              <span>Task not completed</span>
+            </div>
+          </div>
+          <h2>No margin</h2>
+        </article>
+      </div>
+    </section>
+
+    <section class="section paper abstract-section" aria-labelledby="abstract-title">
+      <article>
+        <p class="eyebrow">Abstract</p>
+        <h2 id="abstract-title">Abstract</h2>
+        <p>Maintaining contact in non-prehensile manipulation requires more than nominal friction cone feasibility: a force barely inside the cone and one well inside it are both feasible, but they provide different margins against slip and contact loss.</p>
+        <p>This paper uses signed friction distance to measure friction margin in force space and derives a task-adaptive margin from the force correction needed to balance pivot moment deviations in bimanual tilting. The resulting contact margins are embedded in a sequence of second-order cone programs (SOCPs), each giving a globally optimal contact force solution at a tilt angle. The optimizer balances the object about an environmental pivot while keeping robot and pivot contact forces away from the nominal friction boundary. Optimizer-level results show interpretable force redistribution and adaptation to object property changes. Real-world experiments demonstrate successful execution under object property variations and model mismatch, while fixed margin and no-margin comparisons illustrate the importance of adapting the margin to task demand. These results support signed friction distance margins as a force planning mechanism for maintaining contact in bimanual non-prehensile manipulation.</p>
+      </article>
+    </section>
+
+    <section class="section pipeline" id="method" aria-labelledby="method-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Method</p>
+          <h2 id="method-title">Method</h2>
+        </div>
+        <p>The planner maps the force correction required by the task to contact-specific friction margins in force space, then optimizes contact forces that retain a finite friction margin.</p>
+      </div>
+      <div class="method-interactive" data-method-interactive>
+        <div class="method-stage">
+          <figure class="contact-view contact-left">
+            <p class="contact-reading"><span data-reserve-reading>Planned force margin</span><span data-required-reading>Required margin</span></p>
+            <svg viewBox="0 0 300 250" role="img" aria-labelledby="left-cone-title left-cone-desc">
+              <title id="left-cone-title">Left-contact friction cone</title>
+              <desc id="left-cone-desc">The nominal friction boundary, required margin, and optimized planned force update with tilt angle.</desc>
+              <defs><marker id="force-arrow-left" viewBox="0 0 8 12" refX="7.5" refY="6" markerWidth="6" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 8 6 L 0 12 z"></path></marker></defs>
+              <path class="cone-fill" data-cone-fill></path>
+              <path class="cone-boundary" data-cone-boundary></path>
+              <path class="margin-boundary" data-margin-boundary></path>
+              <line class="cone-axis" x1="150" y1="220" x2="150" y2="25"></line>
+              <line class="force-vector" data-force-vector x1="150" y1="220" marker-end="url(#force-arrow-left)"></line>
+              <text class="axis-label" x="150" y="244" text-anchor="middle">Tangential force</text>
+              <text class="axis-label" x="18" y="122" text-anchor="middle" transform="rotate(-90 18 122)">Normal force</text>
+            </svg>
+          </figure>
+
+          <figure class="tilt-view">
+            <div class="cone-legend" aria-label="Friction-cone legend">
+              <span><span class="legend-swatch friction-swatch" aria-hidden="true"></span>Friction limit</span>
+              <span class="margin-legend-item"><span class="legend-swatch margin-swatch" aria-hidden="true"></span>Required margin</span>
+            </div>
+            <svg viewBox="0 0 520 340" role="img" aria-labelledby="tilt-title tilt-desc">
+              <title id="tilt-title">Interactive bimanual tilting model</title>
+              <desc id="tilt-desc">A proportionally scaled 0.3-meter by 0.2-meter box rotates from zero to ninety degrees about an environmental pivot, with robot contacts and gravity shown.</desc>
+              <defs>
+                <marker id="gravity-arrow" viewBox="0 0 8 12" refX="7.5" refY="6" markerWidth="7" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M 0 0 L 8 6 L 0 12 z"></path></marker>
+                <pattern id="ground-hatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="18"></line></pattern>
+              </defs>
+              <rect class="ground-hatch" x="35" y="280" width="450" height="28"></rect>
+              <line class="floor-line" x1="35" y1="280" x2="485" y2="280"></line>
+              <polyline class="contact-connector left-connector" data-left-connector></polyline>
+              <polyline class="contact-connector right-connector" data-right-connector></polyline>
+              <g class="tilt-object" data-tilt-object>
+                <rect data-box-shape x="200" y="128" width="228" height="152" rx="5"></rect>
+                <line class="finger-stem" data-left-finger-stem></line>
+                <line class="finger-stem" data-right-finger-stem></line>
+                <path class="contact-hemisphere left-hemisphere" data-left-hemisphere></path>
+                <path class="contact-hemisphere right-hemisphere" data-right-hemisphere></path>
+                <circle class="contact-marker left-marker" data-left-contact cx="236.5" cy="128" r="6"></circle>
+                <circle class="contact-marker right-marker" data-right-contact cx="428" cy="204" r="6"></circle>
+                <circle class="center-marker" data-center-marker cx="314" cy="204" r="6.5"></circle>
+              </g>
+              <path class="pivot-marker" d="M 189 280 L 211 280 L 200 295 Z"></path>
+              <line class="gravity-line" data-gravity-line marker-end="url(#gravity-arrow)"></line>
+              <text class="model-label" data-gravity-label>Gravity</text>
+            </svg>
+          </figure>
+
+          <figure class="contact-view contact-right">
+            <p class="contact-reading"><span data-reserve-reading>Planned force margin</span><span data-required-reading>Required margin</span></p>
+            <svg viewBox="0 0 300 250" role="img" aria-labelledby="right-cone-title right-cone-desc">
+              <title id="right-cone-title">Right-contact friction cone</title>
+              <desc id="right-cone-desc">The nominal friction boundary, required margin, and optimized planned force update with tilt angle.</desc>
+              <defs><marker id="force-arrow-right" viewBox="0 0 8 12" refX="7.5" refY="6" markerWidth="6" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 8 6 L 0 12 z"></path></marker></defs>
+              <path class="cone-fill" data-cone-fill></path>
+              <path class="cone-boundary" data-cone-boundary></path>
+              <path class="margin-boundary" data-margin-boundary></path>
+              <line class="cone-axis" x1="150" y1="220" x2="150" y2="25"></line>
+              <line class="force-vector" data-force-vector x1="150" y1="220" marker-end="url(#force-arrow-right)"></line>
+              <text class="axis-label" x="150" y="244" text-anchor="middle">Tangential force</text>
+              <text class="axis-label" x="282" y="122" text-anchor="middle" transform="rotate(90 282 122)">Normal force</text>
+            </svg>
+          </figure>
+        </div>
+
+        <figure class="demand-view">
+          <svg viewBox="0 0 900 150" role="img" aria-labelledby="demand-title demand-desc">
+            <title id="demand-title">Task force demand by tilt angle</title>
+            <desc id="demand-desc">The curve shows the minimum robot contact force needed to balance the pivot moment; a marker follows the selected tilt angle.</desc>
+            <line class="chart-axis" x1="54" y1="116" x2="864" y2="116"></line>
+            <line class="chart-axis" x1="54" y1="18" x2="54" y2="116"></line>
+            <path class="demand-area" data-demand-area></path>
+            <path class="demand-line" data-demand-line></path>
+            <line class="demand-guide" data-demand-guide y1="18" y2="116"></line>
+            <circle class="demand-point" data-demand-point r="6"></circle>
+            <text class="chart-label" x="54" y="138">0°</text>
+            <text class="chart-label" x="459" y="138" text-anchor="middle">45°</text>
+            <text class="chart-label" x="864" y="138" text-anchor="end">90°</text>
+            <text class="chart-label" x="18" y="70" text-anchor="middle" transform="rotate(-90 18 70)">Task demand</text>
+          </svg>
+        </figure>
+
+        <div class="method-controls">
+          <label for="tilt-angle">Tilt angle <output data-angle-output for="tilt-angle">5°</output></label>
+          <input id="tilt-angle" data-angle-slider type="range" min="0" max="90" step="1" value="5" disabled>
+          <button class="margin-toggle" data-margin-toggle type="button" aria-pressed="true" disabled><span class="toggle-track" aria-hidden="true"><span></span></span><span data-toggle-label>Margin on</span></button>
+        </div>
+        <p class="method-error" data-method-error role="alert" hidden>The interactive planner data could not be loaded. Please refresh the page.</p>
+        <noscript><p class="method-error">JavaScript is required for the interactive Method view.</p></noscript>
+      </div>
+    </section>
+
+    <section class="section video-results" id="results" aria-labelledby="results-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Results</p>
+          <h2 id="results-title">Real Robot Experiments</h2>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <div class="video-group-heading">
+          <h3>Object property variation</h3>
+        </div>
+        <div class="video-frame comparison-video">
+          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/object-property-comparison-poster.jpg?v=5" aria-label="Synchronized two-by-two comparison of light and heavy objects in the first row and center-of-mass shifts toward and away from the pivot in the second row; all shown trials complete the tilt">
+            <source src="assets/videos/object-property-comparison.mp4?v=6" type="video/mp4">
+          </video>
+        </div>
+        <p class="video-takeaway">Changes in object mass and center of mass alter the task demand; the friction margin adapts accordingly, supporting task success.</p>
+      </div>
+
+      <div class="video-group">
+        <div class="video-group-heading">
+          <h3>Model mismatch</h3>
+        </div>
+        <div class="video-frame model-mismatch-comparison">
+          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/model-mismatch-comparison-poster.jpg?v=8" aria-label="Synchronized three-panel comparison with assumed mass reduced by ten percent, assumed center of mass shifted ten percent toward the pivot, and assumed friction increased by ten percent">
+            <source src="assets/videos/model-mismatch-comparison.mp4?v=8" type="video/mp4">
+          </video>
+        </div>
+        <p class="video-takeaway">Friction margin supports task success under the tested model mismatches.</p>
+      </div>
+
+      <div class="video-group">
+        <div class="video-group-heading">
+          <h3>Fixed margin study</h3>
+          <p>To test whether a fixed margin can achieve the same outcome, we apply a matched-effort fixed margin under the CoM-mismatch condition.</p>
+        </div>
+        <div class="video-frame fixed-margin-comparison">
+          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/fixed-margin-comparison-poster.jpg?v=4" aria-label="Synchronized fixed-margin comparison showing severe slip with an incomplete tilt and left-contact loss with an incomplete tilt under center-of-mass mismatch">
+            <source src="assets/videos/fixed-margin-comparison.mp4?v=9" type="video/mp4">
+          </video>
+        </div>
+        <p class="video-takeaway">Friction margin should adapt as task demand changes across the motion.</p>
+      </div>
+
+      <div class="video-group experiment-summary" aria-labelledby="experiment-summary-title">
+        <div class="video-group-heading">
+          <h3 id="experiment-summary-title">Experimental summary</h3>
+        </div>
+        <div class="summary-grid">
+          <section class="summary-panel" aria-labelledby="adaptive-summary-title">
+            <h4 id="adaptive-summary-title">Task-adaptive margin</h4>
+            <table class="summary-table">
+              <thead>
+                <tr><th scope="col">Condition</th><th scope="col">Successful trials</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Nominal</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Light object</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Heavy object</td><td class="summary-result">5/5</td></tr>
+                <tr><td>CoM toward pivot</td><td class="summary-result">5/5</td></tr>
+                <tr><td>CoM away from pivot</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Assumed mass −10%</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Assumed CoM 10% toward pivot</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Assumed friction +10%</td><td class="summary-result">5/5</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="summary-panel comparison-summary" aria-label="Fixed-margin and no-margin comparisons">
+            <h4>Fixed margin</h4>
+            <table class="summary-table">
+              <thead>
+                <tr><th scope="col">Condition</th><th scope="col">Successful trials</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Nominal</td><td class="summary-result">5/5</td></tr>
+                <tr><td>Assumed CoM 10% toward pivot</td><td class="summary-result">0/5</td></tr>
+              </tbody>
+            </table>
+
+            <h4>No margin</h4>
+            <table class="summary-table">
+              <thead>
+                <tr><th scope="col">Condition</th><th scope="col">Successful trials</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Nominal</td><td class="summary-result">0/5</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+        <p class="summary-note">A successful trial completes the tilt while maintaining both robot contacts.</p>
+      </div>
+    </section>
+
+    <section class="section conclusion" aria-labelledby="conclusion-title">
+      <div class="section-heading">
+        <h2 id="conclusion-title">Conclusion</h2>
+      </div>
+      <p id="conclusion-statement">Task-adaptive friction margins provide a physically interpretable way to move contact force planning beyond nominal feasibility by allocating friction reserve as task demand changes.</p>
+    </section>
+
+    <section class="section citation" aria-labelledby="citation-title">
+      <div class="section-heading">
+        <h2 id="citation-title">Cite This Work</h2>
+      </div>
+      <pre><code>@article{keeping-contact,
+  title   = {Keeping Contact: Task-Adaptive Friction Margins for Bimanual Non-Prehensile Manipulation},
+  author  = {To be confirmed},
+  journal = {To be confirmed},
+  year    = {To be confirmed}
+}</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>This website is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+      <p>It borrows the source code of the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project page.</p>
+    </div>
+  </footer>
+  <script src="assets/js/method-interactive.js?v=22"></script>
+  <script>
+    const teaserVideos = [...document.querySelectorAll('[data-sync-video]')];
+    const inViewVideos = [...document.querySelectorAll('[data-autoplay-in-view]')];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const noMarginVideo = document.querySelector('[data-no-margin-video]');
+    const failureOverlay = document.querySelector('[data-failure-overlay]');
+
+    if (noMarginVideo && failureOverlay) {
+      const failureHoldStart = 8.1;
+      const updateFailureOverlay = () => {
+        const isVisible = noMarginVideo.currentTime >= failureHoldStart;
+        failureOverlay.classList.toggle('is-visible', isVisible);
+        failureOverlay.setAttribute('aria-hidden', String(!isVisible));
+      };
+
+      ['loadedmetadata', 'timeupdate', 'seeked'].forEach((eventName) => {
+        noMarginVideo.addEventListener(eventName, updateFailureOverlay);
+      });
+    }
+
+    if (reducedMotion) {
+      teaserVideos.forEach((video) => {
+        video.autoplay = false;
+        video.pause();
+      });
+      inViewVideos.forEach((video) => video.pause());
+    } else if (teaserVideos.length === 2) {
+      const [referenceVideo, comparisonVideo] = teaserVideos;
+      const waitUntilPlayable = (video) => video.readyState >= 3
+        ? Promise.resolve()
+        : new Promise((resolve) => video.addEventListener('canplay', resolve, { once: true }));
+
+      Promise.all(teaserVideos.map(waitUntilPlayable)).then(() => {
+        teaserVideos.forEach((video) => { video.currentTime = 0; });
+        return Promise.all(teaserVideos.map((video) => video.play()));
+      }).catch(() => {
+        // Native controls remain available if the browser blocks muted autoplay.
+      });
+
+      referenceVideo.addEventListener('timeupdate', () => {
+        if (referenceVideo.paused || comparisonVideo.paused) return;
+        const drift = comparisonVideo.currentTime - referenceVideo.currentTime;
+        if (Math.abs(drift) > 0.12 && Math.abs(drift) < referenceVideo.duration / 2) {
+          comparisonVideo.currentTime = referenceVideo.currentTime;
+        }
+      });
+    }
+
+    if (!reducedMotion && 'IntersectionObserver' in window) {
+      const inViewObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.45 });
+
+      inViewVideos.forEach((video) => inViewObserver.observe(video));
+    }
+  </script>
+</body>
+</html>
