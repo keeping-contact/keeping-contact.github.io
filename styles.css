@@ -312,6 +312,7 @@ h1 {
 .comparison-video video { display: block; width: 100%; aspect-ratio: 1440 / 804; background: #111; }
 .model-mismatch-comparison video { display: block; width: 100%; aspect-ratio: 1920 / 358; background: #111; }
 .fixed-margin-comparison video { display: block; width: 100%; aspect-ratio: 1440 / 402; background: #111; }
+.method-reference,
 .video-takeaway { width: min(100%, 46rem); margin: 1rem auto 0; color: var(--muted); text-align: center; }
 .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; width: min(100%, 56rem); margin-inline: auto; align-items: start; }
 .summary-panel { min-width: 0; }
