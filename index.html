@@ -38,9 +38,9 @@
         </div>
 
         <div class="resource-row" aria-label="Project resources">
-          <span class="resource pending" title="Link pending confirmation"><i class="fas fa-file-pdf" aria-hidden="true"></i><span>PDF</span></span>
-          <span class="resource pending" title="Link pending confirmation"><i class="ai ai-arxiv" aria-hidden="true"></i><span>arXiv</span></span>
-          <span class="resource pending" title="AI-generated paper overview on alphaXiv — link pending confirmation" aria-label="AI-generated paper overview on alphaXiv, link pending confirmation"><img class="resource-icon" src="assets/images/alphaxiv-mark.svg?v=2" alt=""><span>Overview</span></span>
+          <a class="resource" href="https://arxiv.org/pdf/2610.36961" target="_blank" rel="noopener noreferrer" title="Read the PDF"><i class="fas fa-file-pdf" aria-hidden="true"></i><span>PDF</span></a>
+          <a class="resource" href="https://arxiv.org/abs/2610.36961" target="_blank" rel="noopener noreferrer" title="Read on arXiv"><i class="ai ai-arxiv" aria-hidden="true"></i><span>arXiv</span></a>
+          <a class="resource" href="https://www.alphaxiv.org/abs/2610.36961" target="_blank" rel="noopener noreferrer" title="AI-generated paper overview on alphaXiv" aria-label="AI-generated paper overview on alphaXiv"><img class="resource-icon" src="assets/images/alphaxiv-mark.svg?v=2" alt=""><span>Overview</span></a>
         </div>
       </div>
     </section>
@@ -194,8 +194,8 @@
           <h3>Object property variation</h3>
         </div>
         <div class="video-frame comparison-video">
-          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/object-property-comparison-poster.jpg?v=5" aria-label="Synchronized two-by-two comparison of light and heavy objects in the first row and center-of-mass shifts toward and away from the pivot in the second row; all shown trials complete the tilt">
-            <source src="assets/videos/object-property-comparison.mp4?v=6" type="video/mp4">
+          <video data-autoplay-in-view muted loop playsinline controls preload="none" poster="assets/videos/object-property-comparison-poster.jpg?v=5" aria-label="Synchronized two-by-two comparison of light and heavy objects in the first row and center-of-mass shifts toward and away from the pivot in the second row; all shown trials complete the tilt">
+            <source data-src="assets/videos/object-property-comparison.mp4?v=6" type="video/mp4">
           </video>
         </div>
         <p class="video-takeaway">Changes in object mass and center of mass alter the task demand; the friction margin adapts accordingly, supporting task success.</p>
@@ -206,8 +206,8 @@
           <h3>Model mismatch</h3>
         </div>
         <div class="video-frame model-mismatch-comparison">
-          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/model-mismatch-comparison-poster.jpg?v=8" aria-label="Synchronized three-panel comparison with assumed mass reduced by ten percent, assumed center of mass shifted ten percent toward the pivot, and assumed friction increased by ten percent">
-            <source src="assets/videos/model-mismatch-comparison.mp4?v=8" type="video/mp4">
+          <video data-autoplay-in-view muted loop playsinline controls preload="none" poster="assets/videos/model-mismatch-comparison-poster.jpg?v=8" aria-label="Synchronized three-panel comparison with assumed mass reduced by ten percent, assumed center of mass shifted ten percent toward the pivot, and assumed friction increased by ten percent">
+            <source data-src="assets/videos/model-mismatch-comparison.mp4?v=8" type="video/mp4">
           </video>
         </div>
         <p class="video-takeaway">Friction margin supports task success under the tested model mismatches.</p>
@@ -219,8 +219,8 @@
           <p>To test whether a fixed margin can achieve the same outcome, we apply a matched-effort fixed margin under the CoM-mismatch condition.</p>
         </div>
         <div class="video-frame fixed-margin-comparison">
-          <video data-autoplay-in-view autoplay muted loop playsinline controls preload="auto" poster="assets/videos/fixed-margin-comparison-poster.jpg?v=4" aria-label="Synchronized fixed-margin comparison showing severe slip with an incomplete tilt and left-contact loss with an incomplete tilt under center-of-mass mismatch">
-            <source src="assets/videos/fixed-margin-comparison.mp4?v=9" type="video/mp4">
+          <video data-autoplay-in-view muted loop playsinline controls preload="none" poster="assets/videos/fixed-margin-comparison-poster.jpg?v=4" aria-label="Synchronized fixed-margin comparison showing severe slip with an incomplete tilt and left-contact loss with an incomplete tilt under center-of-mass mismatch">
+            <source data-src="assets/videos/fixed-margin-comparison.mp4?v=9" type="video/mp4">
           </video>
         </div>
         <p class="video-takeaway">Friction margin should adapt as task demand changes across the motion.</p>
@@ -288,11 +288,11 @@
       <div class="section-heading">
         <h2 id="citation-title">Cite This Work</h2>
       </div>
-      <pre><code>@article{keeping-contact,
-  title   = {Keeping Contact: Task-Adaptive Friction Margins for Bimanual Non-Prehensile Manipulation},
-  author  = {To be confirmed},
-  journal = {To be confirmed},
-  year    = {To be confirmed}
+      <pre><code>@article{lee2026keeping,
+  title={Keeping Contact: Task-Adaptive Friction Margins for Bimanual Non-Prehensile Manipulation},
+  author={Lee, Qian Ying and Yang, Lin and Campolo, Domenico},
+  journal={arXiv preprint arXiv:2610.36961},
+  year={2026}
 }</code></pre>
     </section>
   </main>
@@ -304,68 +304,6 @@
     </div>
   </footer>
   <script src="assets/js/method-interactive.js?v=22"></script>
-  <script>
-    const teaserVideos = [...document.querySelectorAll('[data-sync-video]')];
-    const inViewVideos = [...document.querySelectorAll('[data-autoplay-in-view]')];
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const noMarginVideo = document.querySelector('[data-no-margin-video]');
-    const failureOverlay = document.querySelector('[data-failure-overlay]');
-
-    if (noMarginVideo && failureOverlay) {
-      const failureHoldStart = 8.1;
-      const updateFailureOverlay = () => {
-        const isVisible = noMarginVideo.currentTime >= failureHoldStart;
-        failureOverlay.classList.toggle('is-visible', isVisible);
-        failureOverlay.setAttribute('aria-hidden', String(!isVisible));
-      };
-
-      ['loadedmetadata', 'timeupdate', 'seeked'].forEach((eventName) => {
-        noMarginVideo.addEventListener(eventName, updateFailureOverlay);
-      });
-    }
-
-    if (reducedMotion) {
-      teaserVideos.forEach((video) => {
-        video.autoplay = false;
-        video.pause();
-      });
-      inViewVideos.forEach((video) => video.pause());
-    } else if (teaserVideos.length === 2) {
-      const [referenceVideo, comparisonVideo] = teaserVideos;
-      const waitUntilPlayable = (video) => video.readyState >= 3
-        ? Promise.resolve()
-        : new Promise((resolve) => video.addEventListener('canplay', resolve, { once: true }));
-
-      Promise.all(teaserVideos.map(waitUntilPlayable)).then(() => {
-        teaserVideos.forEach((video) => { video.currentTime = 0; });
-        return Promise.all(teaserVideos.map((video) => video.play()));
-      }).catch(() => {
-        // Native controls remain available if the browser blocks muted autoplay.
-      });
-
-      referenceVideo.addEventListener('timeupdate', () => {
-        if (referenceVideo.paused || comparisonVideo.paused) return;
-        const drift = comparisonVideo.currentTime - referenceVideo.currentTime;
-        if (Math.abs(drift) > 0.12 && Math.abs(drift) < referenceVideo.duration / 2) {
-          comparisonVideo.currentTime = referenceVideo.currentTime;
-        }
-      });
-    }
-
-    if (!reducedMotion && 'IntersectionObserver' in window) {
-      const inViewObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      }, { threshold: 0.45 });
-
-      inViewVideos.forEach((video) => inViewObserver.observe(video));
-    }
-  </script>
+  <script src="assets/js/video-playback.js?v=1"></script>
 </body>
 </html>
