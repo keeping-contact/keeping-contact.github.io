@@ -178,8 +178,9 @@
 
     angleOutput.value = `${sample.angle}°`;
     drawModel();
-    drawCone('left', forces.left);
-    drawCone('right', forces.right);
+    // Match the manuscript display convention; profile keys retain planner labels.
+    drawCone('left', forces.right);
+    drawCone('right', forces.left);
     demandGuide.setAttribute('x1', point.x.toFixed(2));
     demandGuide.setAttribute('x2', point.x.toFixed(2));
     demandPoint.setAttribute('cx', point.x.toFixed(2));
