@@ -5,8 +5,52 @@
   const visibleTeasers = new Set();
   const visibleResults = new Set();
   const expectedPauses = new WeakSet();
+  const manualControls = new WeakSet();
+
+  const showPlaybackControls = (video) => {
+    video.controls = true;
+  };
+
+  const hideAutomaticControls = (video) => {
+    if (!reducedMotion && !manualControls.has(video)) {
+      video.controls = false;
+    }
+  };
+
+  const resetPlaybackControls = (video) => {
+    manualControls.delete(video);
+    hideAutomaticControls(video);
+  };
+
+  [...teaserVideos, ...resultVideos].forEach((video) => {
+    const revealControls = () => {
+      manualControls.add(video);
+      showPlaybackControls(video);
+    };
+    video.tabIndex = 0;
+    video.addEventListener('pointerdown', revealControls);
+    video.addEventListener('focusin', revealControls);
+    video.addEventListener('keydown', (event) => {
+      if (!video.controls && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        revealControls();
+      }
+    });
+    hideAutomaticControls(video);
+  });
+
   let teaserPlaybackRequested = !reducedMotion;
   let startingTeasers = false;
+  let teaserRetryRequested = false;
+  let bufferingTeasers = false;
+  let teaserAutoplayBlocked = false;
+
+  teaserVideos.forEach((video) => {
+    // Safari checks these properties when play() is requested.
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+  });
 
   const noMarginVideo = document.querySelector('[data-no-margin-video]');
   const failureOverlay = document.querySelector('[data-failure-overlay]');
@@ -21,14 +65,14 @@
     });
   }
 
-  const pauseTeasers = () => {
-    teaserVideos.forEach((video) => {
-      if (!video.paused) {
-        expectedPauses.add(video);
-        video.pause();
-      }
-    });
+  const pauseTeaser = (video) => {
+    if (!video.paused) {
+      expectedPauses.add(video);
+      video.pause();
+    }
   };
+
+  const pauseTeasers = () => teaserVideos.forEach(pauseTeaser);
 
   const alignTeasers = (referenceVideo) => {
     teaserVideos.forEach((video) => {
@@ -43,27 +87,55 @@
     visibleTeasers.size > 0 && !document.hidden;
 
   const updateTeasers = () => {
-    if (!teasersShouldPlay() || teaserVideos.some((video) => video.readyState < 3)) {
+    if (!visibleTeasers.size) teaserVideos.forEach(resetPlaybackControls);
+    if (!teasersShouldPlay() || teaserAutoplayBlocked) {
       pauseTeasers();
       return;
     }
-    if (startingTeasers || teaserVideos.every((video) => !video.paused)) return;
+    if (startingTeasers) {
+      teaserRetryRequested = true;
+      return;
+    }
+    if (bufferingTeasers && teaserVideos.some((video) => video.readyState < 3)) return;
+    if (teaserVideos.every((video) => !video.paused)) return;
 
+    // Request playback to initiate loading: Safari may ignore preload="auto".
+    // Waiting for canplay before this request can prevent startup entirely.
+    bufferingTeasers = false;
+    teaserRetryRequested = false;
     alignTeasers(teaserVideos[0]);
     startingTeasers = true;
-    Promise.all(teaserVideos.map((video) => video.play()))
+    let started = false;
+    Promise.all(teaserVideos.map((video) => {
+      hideAutomaticControls(video);
+      video.muted = true;
+      return Promise.resolve(video.play()).then(() => {
+        // Hold a ready clip while its partner finishes loading.
+        if (!teasersShouldPlay() || teaserVideos.some((other) =>
+          other !== video && other.readyState < 3)) {
+          pauseTeaser(video);
+        }
+      });
+    }))
       .then(() => {
-        if (!teasersShouldPlay()) pauseTeasers();
+        started = true;
+        if (teasersShouldPlay()) alignTeasers(teaserVideos[0]);
+        else pauseTeasers();
       })
       .catch((error) => {
-        // Scrolling away may interrupt play(); keep the intent to resume.
-        if (error.name !== 'AbortError') teaserPlaybackRequested = false;
+        // Browser policy may require a tap; transient load errors may recover.
+        if (error.name === 'NotAllowedError') {
+          teaserAutoplayBlocked = true;
+          teaserVideos.forEach(showPlaybackControls);
+        }
         pauseTeasers();
       })
       .finally(() => {
         startingTeasers = false;
-        if (teasersShouldPlay() && teaserVideos.every((video) => video.readyState >= 3) &&
-            teaserVideos.some((video) => video.paused)) {
+        const shouldRetry = teaserRetryRequested ||
+          (started && teaserVideos.some((video) => video.paused));
+        teaserRetryRequested = false;
+        if (teasersShouldPlay() && !teaserAutoplayBlocked && shouldRetry) {
           updateTeasers();
         }
       });
@@ -71,11 +143,18 @@
 
   if (teaserVideos.length === 2) {
     teaserVideos.forEach((video) => {
-      video.addEventListener('canplay', updateTeasers);
-      video.addEventListener('waiting', pauseTeasers);
+      ['loadedmetadata', 'loadeddata', 'canplay'].forEach((eventName) => {
+        video.addEventListener(eventName, updateTeasers);
+      });
+      video.addEventListener('waiting', () => {
+        if (startingTeasers || !teasersShouldPlay()) return;
+        bufferingTeasers = true;
+        pauseTeasers();
+      });
       video.addEventListener('play', () => {
         if (startingTeasers) return;
         teaserPlaybackRequested = true;
+        teaserAutoplayBlocked = false;
         alignTeasers(video);
         updateTeasers();
       });
@@ -117,9 +196,13 @@
   const updateResultVideo = (video) => {
     if (!visibleResults.has(video) || document.hidden) {
       video.pause();
+      if (!visibleResults.has(video)) resetPlaybackControls(video);
     } else if (!reducedMotion) {
       loadResultVideo(video);
-      video.play().catch(() => {});
+      hideAutomaticControls(video);
+      video.play().catch((error) => {
+        if (error.name === 'NotAllowedError') showPlaybackControls(video);
+      });
     }
   };
 
@@ -133,8 +216,10 @@
   if ('IntersectionObserver' in window) {
     const teaserObserver = new IntersectionObserver((entries) => {
       entries.forEach(({ target, isIntersecting, intersectionRatio }) => {
-        if (isIntersecting && intersectionRatio > 0) visibleTeasers.add(target);
-        else visibleTeasers.delete(target);
+        if (isIntersecting && intersectionRatio > 0) {
+          if (!visibleTeasers.has(target)) teaserAutoplayBlocked = false;
+          visibleTeasers.add(target);
+        } else visibleTeasers.delete(target);
       });
       updateTeasers();
     }, { threshold: 0 });
@@ -160,8 +245,10 @@
     const checkVisibility = () => {
       teaserVideos.forEach((video) => {
         const rect = video.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < window.innerHeight) visibleTeasers.add(video);
-        else visibleTeasers.delete(video);
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          if (!visibleTeasers.has(video)) teaserAutoplayBlocked = false;
+          visibleTeasers.add(video);
+        } else visibleTeasers.delete(video);
       });
       updateTeasers();
       resultVideos.forEach((video) => {
@@ -186,6 +273,7 @@
   }
 
   document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) teaserAutoplayBlocked = false;
     updateTeasers();
     resultVideos.forEach(updateResultVideo);
   });
